@@ -1,0 +1,23 @@
+{
+  "name": "nice-mssql",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kostyukdg/nice-mssql.git"
+  },
+  "author": "kostyukdg",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kostyukdg/nice-mssql/issues"
+  },
+  "homepage": "https://github.com/kostyukdg/nice-mssql#readme",
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  }
+}
