@@ -1,5 +1,6 @@
 import { connect, ConnectionPool, Transaction, config } from 'mssql';
 import { MssqlError } from './MssqlError';
+import { Request } from './Request';
 
 let pool: ConnectionPool;
 
@@ -14,4 +15,8 @@ export function getPool() {
 
 export function getTransaction() {
   return new Transaction(getPool());
+}
+
+export function getRequest(transaction?: Transaction) {
+  return transaction ? new Request(transaction) : new Request(getPool());
 }
