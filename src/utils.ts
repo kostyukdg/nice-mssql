@@ -4,7 +4,7 @@ import { Request } from './Request';
 
 let pool: ConnectionPool;
 
-export async function connectToDB(connectionConfig: config) {
+export async function connectToMssql(connectionConfig: config) {
   pool = await connect(connectionConfig);
 }
 

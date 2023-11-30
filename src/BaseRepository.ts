@@ -3,13 +3,14 @@ import { getPool } from './utils';
 import { MssqlError } from './MssqlError';
 import { Request } from './Request';
 
-export class Base {
+export class BaseRepository {
   private pool: ConnectionPool = getPool();
 
   private transaction?: Transaction;
 
   public setTransaction(transaction: Transaction) {
     this.transaction = transaction;
+    return this;
   }
 
   public getTransaction(): Transaction {
