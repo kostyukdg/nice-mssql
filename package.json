@@ -2,10 +2,10 @@
   "name": "nice-mssql",
   "version": "0.0.5",
   "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "files": [
-    "/dist"
+    "/dist/src"
   ],
   "scripts": {
     "build": "tsc -p .",
