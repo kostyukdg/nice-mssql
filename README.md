@@ -17,6 +17,10 @@ Nice-mssql doesn't have design restrictions, performance problems and saves a lo
 npm i nice-mssql -s
 ```
 
+## Example of usage
+
+[See the example folder of use.](https://github.com/kostyukdg/nice-mssql/tree/main/example)
+
 ## Import
 
 ```ts
@@ -53,7 +57,7 @@ await connectToMssql({
 
 ### QueryRepository
 
-It's a simple place to store db queries separately from business logic. See the example folder of use.
+It's a simple place to store db queries separately from business logic. See [the example](https://github.com/kostyukdg/nice-mssql/tree/main/example) folder of use.
 
 1. Create a query class for a table.
     ```ts
