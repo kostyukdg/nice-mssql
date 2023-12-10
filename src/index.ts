@@ -1,17 +1,17 @@
-import { BaseRepository } from './BaseRepository';
+import { QueryRepository } from './QueryRepository';
 import { Transaction } from 'mssql';
 
 export * from 'mssql';
 
 export * from './utils';
 
-export { BaseRepository } from './BaseRepository';
+export { QueryRepository } from './QueryRepository';
 
 export { MssqlError } from './MssqlError';
 
 export { Request } from './Request';
 
-export function getRepository<T extends BaseRepository>(
+export function getTable<T extends QueryRepository>(
   Repository: new () => T,
   transaction?: Transaction,
 ): T {

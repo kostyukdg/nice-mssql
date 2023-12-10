@@ -3,7 +3,7 @@ import { getPool } from './utils';
 import { MssqlError } from './MssqlError';
 import { Request } from './Request';
 
-export class BaseRepository {
+export class QueryRepository {
   private pool: ConnectionPool = getPool();
 
   private transaction?: Transaction;
