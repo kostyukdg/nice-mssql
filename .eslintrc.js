@@ -20,6 +20,9 @@ module.exports = {
           "pascalCase": true
         }
       }
-    ]
+    ],
+    "unicorn/prevent-abbreviations": "off",
+    "unicorn/no-null": "off",
+    "unicorn/prefer-top-level-await": "off"
   },
 };
