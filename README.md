@@ -17,6 +17,8 @@ Nice-mssql doesn't have design restrictions, performance problems and saves a lo
 npm i nice-mssql -s
 ```
 
+*Remove the `mssql` package from package.json if you have it. Use nice-mssql instead. It's fully compatible.*
+
 ## Example of usage
 
 [See the example folder of use.](https://github.com/kostyukdg/nice-mssql/tree/main/example)
