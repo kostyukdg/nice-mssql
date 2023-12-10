@@ -13,6 +13,11 @@ export function getPool() {
   return pool;
 }
 
+export async function closeMssqlConnection() {
+  if (pool === undefined) throw new MssqlError('No MSSQL connection');
+  await pool.close();
+}
+
 export function getTransaction() {
   return new Transaction(getPool());
 }
