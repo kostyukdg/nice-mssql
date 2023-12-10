@@ -1,6 +1,6 @@
 {
   "name": "nice-mssql",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Super flexible and easy to use mssql library",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
