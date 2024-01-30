@@ -7,8 +7,8 @@ export interface User {
   name: string;
 }
 
-export class Users extends QueryRepository {
-  async findOneById(id: number): Promise<User | null> {
+export class UserRepository extends QueryRepository {
+  async findOneById(id: User['id']): Promise<User | null> {
     let user = null;
     const sqlRequest = this.getRequest();
     const queryResult = await sqlRequest
@@ -35,7 +35,7 @@ export class Users extends QueryRepository {
     return queryResult.recordset;
   }
 
-  async add(id: number, name: string): Promise<void> {
+  async add(id: User['id'], name: User['name']): Promise<void> {
     const sqlRequest = this.getRequest();
     await sqlRequest
       .input('id', Int, id)
@@ -52,7 +52,7 @@ export class Users extends QueryRepository {
       );
   }
 
-  async updateNameById(id: number, name: string): Promise<void> {
+  async updateNameById(id: User['id'], name: User['name']): Promise<void> {
     const sqlRequest = this.getRequest();
     await sqlRequest
       .input('id', Int, id)
@@ -68,4 +68,4 @@ export class Users extends QueryRepository {
   }
 }
 
-export default Users;
+export default UserRepository;

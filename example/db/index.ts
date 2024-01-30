@@ -1,3 +1,3 @@
-export { getTable, connectToMssql } from '../../src';
+export { getRepository, connectToMssql } from '../../src';
 
-export * from './Users';
+export * from './UserRepository';

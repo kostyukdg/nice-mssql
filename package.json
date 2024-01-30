@@ -1,7 +1,23 @@
 {
   "name": "nice-mssql",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Super flexible and easy to use mssql library",
+  "keywords": [
+    "database",
+    "mssql",
+    "sql",
+    "server",
+    "msnodesql",
+    "sqlserver",
+    "tds",
+    "node-tds",
+    "tedious",
+    "node-sqlserver",
+    "sqlserver",
+    "msnodesqlv8",
+    "node-mssql",
+    "typescript"
+  ],
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "files": [

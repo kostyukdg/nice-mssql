@@ -11,7 +11,7 @@ export { MssqlError } from './MssqlError';
 
 export { Request } from './Request';
 
-export function getTable<T extends QueryRepository>(
+export function getRepository<T extends QueryRepository>(
   Repository: new () => T,
   transaction?: Transaction,
 ): T {
