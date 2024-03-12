@@ -1,11 +1,32 @@
-import { connect, ConnectionPool, Transaction, config } from 'mssql';
-import { MssqlError } from './MssqlError';
+import {
+  connect,
+  ConnectionPool,
+  Transaction,
+  config as configOriginal,
+} from 'mssql';
+import { MssqlError } from './errors/MssqlError';
 import { Request } from './Request';
+import { MssqlSlowQueryError } from './errors/MssqlSlowQueryError';
 
-let pool: ConnectionPool;
+export interface SlowQueryLogger {
+  maxExecutionTime: number;
+  logger: (error: MssqlSlowQueryError) => Promise<void> | void;
+}
 
-export async function connectToMssql(connectionConfig: config) {
-  pool = await connect(connectionConfig);
+export interface Config extends configOriginal {
+  slowQueryLogger?: SlowQueryLogger;
+}
+
+let pool: ConnectionPool | undefined;
+let slowQueryLogger: SlowQueryLogger | undefined;
+
+export async function connectToMssql(connectionConfig: Config) {
+  let config = connectionConfig;
+  if (connectionConfig.slowQueryLogger) {
+    slowQueryLogger = connectionConfig.slowQueryLogger;
+    config = { ...config, slowQueryLogger: undefined };
+  }
+  pool = await connect(config);
 }
 
 export function getPool() {
@@ -22,6 +43,25 @@ export function getTransaction() {
   return new Transaction(getPool());
 }
 
-export function getRequest(transaction?: Transaction) {
-  return transaction ? new Request(transaction) : new Request(getPool());
+export function getSlowQueryLogger() {
+  return slowQueryLogger;
+}
+
+export function getRequest(
+  transaction?: Transaction,
+  slowQueryMaxExecutionTime?: number,
+) {
+  const request = transaction
+    ? new Request(transaction)
+    : new Request(getPool());
+  if (slowQueryMaxExecutionTime) {
+    if (!slowQueryLogger) {
+      throw new MssqlSlowQueryError('No MSSQL slow query logger');
+    }
+    request.setSlowQueryLogger({
+      ...slowQueryLogger,
+      maxExecutionTime: slowQueryMaxExecutionTime,
+    });
+  }
+  return request;
 }

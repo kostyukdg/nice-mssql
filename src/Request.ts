@@ -2,10 +2,15 @@ import {
   Request as RequestOriginal,
   MSSQLError as MSSQLErrorOriginal,
   Table,
-  Promise,
   IResult,
 } from 'mssql';
-import { MssqlError } from './MssqlError';
+import { MssqlError } from './errors/MssqlError';
+import { SlowQueryLogger } from './utils';
+import { MssqlSlowQueryError } from './errors/MssqlSlowQueryError';
+
+type RequestExecutionMethod =
+  | typeof Request.prototype.query
+  | typeof Request.prototype.bulk;
 
 async function wrapError<T>(callback: () => Promise<T>) {
   try {
@@ -20,7 +25,48 @@ async function wrapError<T>(callback: () => Promise<T>) {
   }
 }
 
+async function logSlowQuery<T>(
+  callback: () => Promise<T>,
+  calledMethod: RequestExecutionMethod,
+  { maxExecutionTime, logger }: SlowQueryLogger,
+) {
+  const error = new MssqlSlowQueryError();
+  Error.captureStackTrace(error, calledMethod);
+  const timer = setTimeout(() => {
+    logger(error);
+  }, maxExecutionTime);
+  try {
+    return await callback();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export class Request extends RequestOriginal {
+  private slowQueryLogger?: SlowQueryLogger;
+
+  public setSlowQueryLogger(slowQueryLogger: SlowQueryLogger) {
+    this.slowQueryLogger = slowQueryLogger;
+    return this;
+  }
+
+  public getSlowQueryLogger() {
+    return this.slowQueryLogger;
+  }
+
+  private executeMethod<T>(
+    callback: () => Promise<T>,
+    calledMethod: RequestExecutionMethod,
+  ) {
+    const { slowQueryLogger } = this;
+    if (slowQueryLogger) {
+      return wrapError(() =>
+        logSlowQuery(callback, calledMethod, slowQueryLogger),
+      );
+    }
+    return wrapError(callback);
+  }
+
   public query<Entity>(command: string): Promise<IResult<Entity>>;
   public query<Entity>(
     command: TemplateStringsArray,
@@ -31,12 +77,18 @@ export class Request extends RequestOriginal {
     ...interpolations: never[]
   ) {
     if (typeof command === 'string') {
-      return wrapError(() => super.query(command));
+      return this.executeMethod(
+        () => super.query(command),
+        Request.prototype.query,
+      );
     }
-    return wrapError(() => super.query(command, ...interpolations));
+    return this.executeMethod(
+      () => super.query(command, ...interpolations),
+      Request.prototype.query,
+    );
   }
 
   public bulk(table: Table) {
-    return wrapError(() => super.bulk(table));
+    return this.executeMethod(() => super.bulk(table), Request.prototype.bulk);
   }
 }
