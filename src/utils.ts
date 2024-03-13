@@ -10,7 +10,10 @@ import { MssqlSlowQueryError } from './errors/MssqlSlowQueryError';
 
 export interface SlowQueryLogger {
   maxExecutionTime: number;
-  logger: (error: MssqlSlowQueryError) => Promise<void> | void;
+  logger: (
+    error: MssqlSlowQueryError,
+    executionTime?: number,
+  ) => Promise<void> | void;
 }
 
 export interface Config extends configOriginal {
