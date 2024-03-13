@@ -12,7 +12,7 @@ export interface SlowQueryLogger {
   maxExecutionTime: number;
   logger: (
     error: MssqlSlowQueryError,
-    executionTime?: number,
+    executionTime: number,
   ) => Promise<void> | void;
 }
 
