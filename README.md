@@ -74,8 +74,8 @@ It's a simple place to store db queries separately from business logic. See [the
     export class UsersRepository extends QueryRepository {
       async findOneById(id: User['id']): Promise<User | null> {
         let user = null;
-        const sqlRequest = this.getRequest();
-        const queryResult = await sqlRequest
+        const request = this.getRequest();
+        const queryResult = await request
           .input('id', Int, id)
           .query(`
             SELECT
@@ -94,8 +94,8 @@ It's a simple place to store db queries separately from business logic. See [the
       }
       
       async updateNameById(id: User['id'], name: User['name']): Promise<void> {
-        const sqlRequest = this.getRequest();
-        await sqlRequest
+        const request = this.getRequest();
+        await request
           .input('id', Int, id)
           .input('name', NVarChar, name)
           .query(`
@@ -130,6 +130,67 @@ It's a simple place to store db queries separately from business logic. See [the
     There are 2 ways of using query class: using new or getRepository for single use.
 
 *You could give any name for query classes, folders or alias for getRepository.*
+
+### Slow query log
+
+Logs all queries exceeding the time limit.
+
+#### Setup global slow query logging
+
+```ts
+import { connectToMssql } from "nice-mssql";
+
+await connectToMssql({
+  ...,
+  slowQueryLogger: {
+    maxExecutionTime: 500,
+    logger: (
+      error, // contains a full stack trace of the execution
+      executionTime, // real execution time
+    ) => {
+      console.log(error, executionTime);
+    },
+  },
+});
+```
+
+#### Redeclare maxExecutionTime for QueryRepository or specific Request
+
+```ts 
+// repositories/UsersRepository.ts
+export class UsersRepository extends QueryRepository {
+  // Sets max execution query time logging for all this repository queries
+  slowQueryMaxExecutionTime = 1000;
+
+  async findAll(): Promise<User[]> {
+    const request = this.getRequest();
+
+    // Redeclare only maxExecutionTime for specific request
+    request.setSlowQueryMaxExecutionTime(1000);
+
+    // Initialize or redeclare slow query logger for request
+    request.setSlowQueryLogger({
+      maxExecutionTime: 1500,
+      logger: (error, executionTime) => {
+        console.log(error, executionTime);
+      },
+    });
+
+    // Redeclare some slow query logger properties 
+    const slowQueryLogger = request.getSlowQueryLogger();
+    if (slowQueryLogger) {
+      request.setSlowQueryLogger({
+        ...slowQueryLogger,
+        maxExecutionTime: 1000,
+      });
+    }
+
+    const users = await request.query('SELECT * FROM users');
+
+    return users.recordset;
+  }
+}
+```
 
 ### getRequest(transaction?: Transaction)
 

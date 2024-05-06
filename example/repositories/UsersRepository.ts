@@ -10,8 +10,8 @@ export interface User {
 export class UsersRepository extends QueryRepository {
   async findOneById(id: User['id']): Promise<User | null> {
     let user = null;
-    const sqlRequest = this.getRequest();
-    const queryResult = await sqlRequest.input('id', Int, id).query<User>(`
+    const queryResult = await this.getRequest().input('id', Int, id)
+      .query<User>(`
           SELECT
             ${fields}
           FROM
@@ -34,8 +34,8 @@ export class UsersRepository extends QueryRepository {
   }
 
   async add(id: User['id'], name: User['name']): Promise<void> {
-    const sqlRequest = this.getRequest();
-    await sqlRequest.input('id', Int, id).input('name', NVarChar, name).query(`
+    await this.getRequest().input('id', Int, id).input('name', NVarChar, name)
+      .query(`
           INSERT INTO users (
             ${fields}
           )
@@ -48,8 +48,8 @@ export class UsersRepository extends QueryRepository {
   }
 
   async updateNameById(id: User['id'], name: User['name']): Promise<void> {
-    const sqlRequest = this.getRequest();
-    await sqlRequest.input('id', Int, id).input('name', NVarChar, name).query(`
+    await this.getRequest().input('id', Int, id).input('name', NVarChar, name)
+      .query(`
           UPDATE
             users
           SET

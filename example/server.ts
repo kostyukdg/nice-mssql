@@ -16,6 +16,12 @@ const PORT = process.env.PORT || 3000;
     server: '127.0.0.1',
     database: 'db_name',
     port: 1433,
+    slowQueryLogger: {
+      maxExecutionTime: 500,
+      logger: (error, executionTime) => {
+        console.log(error, executionTime);
+      },
+    },
   });
 
   const server = createServer(async (request, response) => {

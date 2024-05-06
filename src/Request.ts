@@ -55,6 +55,19 @@ export class Request extends RequestOriginal {
     return this.slowQueryLogger;
   }
 
+  public setSlowQueryMaxExecutionTime(
+    maxExecutionTime: SlowQueryLogger['maxExecutionTime'],
+  ) {
+    const slowQueryLogger = this.getSlowQueryLogger();
+    if (!slowQueryLogger) {
+      throw new MssqlError('No MSSQL slow query logger');
+    }
+    return this.setSlowQueryLogger({
+      ...slowQueryLogger,
+      maxExecutionTime,
+    });
+  }
+
   private executeMethod<T>(
     callback: () => Promise<T>,
     calledMethod: RequestExecutionMethod,
