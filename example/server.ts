@@ -1,5 +1,10 @@
 import { createServer } from 'node:http';
-import { getRepository, UserRepository, User, connectToMssql } from './db';
+import {
+  getRepository,
+  UsersRepository,
+  User,
+  connectToMssql,
+} from './repositories';
 
 const PORT = process.env.PORT || 3000;
 
@@ -16,10 +21,10 @@ const PORT = process.env.PORT || 3000;
   const server = createServer(async (request, response) => {
     if (request.url === '/user') {
       const user: User | null =
-        await getRepository(UserRepository).findOneById(11);
+        await getRepository(UsersRepository).findOneById(11);
 
       // Different way of using
-      const usersRepository = new UserRepository();
+      const usersRepository = new UsersRepository();
       await usersRepository.add(22, 'Lily');
       const addedUser = usersRepository.findOneById(22);
       if (addedUser !== null) {

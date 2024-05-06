@@ -1,3 +1,3 @@
 export { getRepository, connectToMssql } from '../../src';
 
-export * from './UserRepository';
+export * from './UsersRepository';

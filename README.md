@@ -63,7 +63,7 @@ It's a simple place to store db queries separately from business logic. See [the
 
 1. Create a query class for a table.
     ```ts
-    // db/UserRepository.ts
+    // repositories/UsersRepository.ts
     import { QueryRepository, Int, NVarChar } from "nice-mssql";
     
     export interface User {
@@ -71,20 +71,21 @@ It's a simple place to store db queries separately from business logic. See [the
       name: string;
     }
     
-    export class UserRepository extends QueryRepository {
+    export class UsersRepository extends QueryRepository {
       async findOneById(id: User['id']): Promise<User | null> {
         let user = null;
         const sqlRequest = this.getRequest();
         const queryResult = await sqlRequest
           .input('id', Int, id)
-          .query(
-            'SELECT ' +
-            '  users.id, users.name ' +
-            'FROM ' +
-            '  users ' +
-            'WHERE ' +
-            `  id = @id`,
-          );
+          .query(`
+            SELECT
+              users.id,
+              users.name
+            FROM
+              users
+            WHERE
+              id = @id
+          `);
         if (queryResult.recordset.length === 1) {
           [user] = queryResult.recordset;
         }
@@ -97,34 +98,34 @@ It's a simple place to store db queries separately from business logic. See [the
         await sqlRequest
           .input('id', Int, id)
           .input('name', NVarChar, name)
-          .query(
-            'UPDATE ' +
-            '  users ' +
-            'SET ' +
-            '  name = @name, ' +
-            'WHERE ' +
-            `  id = @id`,
-          );
+          .query(`
+            UPDATE
+              users
+            SET
+              name = @name
+            WHERE
+              id = @id
+          `);
       }
     }
     
-    export default UserRepository;
+    export default UsersRepository;
     ```
 2. Export all query classes from one place for easy importing into the project.
     ```ts
-    // db/index.ts
+    // repositories/index.ts
     export { getRepository } from "nice-mssql";
     
-    export * from './UserRepository';
+    export * from './UsersRepository';
     ```
 3. Use in the project.
     ```ts
-    export { getRepository, UserRepository } from './db';
+    export { getRepository, UsersRepository } from './db';
     
-    const usersRepository = new UserRepository();
+    const usersRepository = new UsersRepository();
     const user1 = await usersRepository.findOneById(11);
     // OR
-    const user2 = await getRepository(UserRepository).findOneById(11);
+    const user2 = await getRepository(UsersRepository).findOneById(11);
     ```
     There are 2 ways of using query class: using new or getRepository for single use.
 
@@ -157,9 +158,9 @@ await request.query('UPDATE users SET name = "bob" WHERE id = 1');
 await request.query('UPDATE users SET name = "lily" WHERE id = 2');
 
 // More details in example folder
-await getRepository(UserRepository, transaction).updateNameById(3, 'mark');
+await getRepository(UsersRepository, transaction).updateNameById(3, 'mark');
 
-const usersRepository = new UserRepository(transaction);
+const usersRepository = new UsersRepository(transaction);
 await usersRepository.updateNameById(1, 'bob');
 await usersRepository.updateNameById(2, 'lily');
 
