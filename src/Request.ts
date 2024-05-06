@@ -3,6 +3,7 @@ import {
   MSSQLError as MSSQLErrorOriginal,
   Table,
   IResult,
+  ISqlType,
 } from 'mssql';
 import { MssqlError } from './errors/MssqlError';
 import { SlowQueryLogger } from './utils';
@@ -104,5 +105,19 @@ export class Request extends RequestOriginal {
 
   public bulk(table: Table) {
     return this.executeMethod(() => super.bulk(table), Request.prototype.bulk);
+  }
+
+  public parametrizeInClause(
+    name: string,
+    type: (() => ISqlType) | ISqlType,
+    values: unknown[],
+  ): string {
+    return values
+      .map((value, index) => {
+        const parameter = `${name}${index}`;
+        super.input(parameter, type, value);
+        return `@${parameter}`;
+      })
+      .join(',');
   }
 }

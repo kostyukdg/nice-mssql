@@ -131,6 +131,29 @@ It's a simple place to store db queries separately from business logic. See [the
 
 *You could give any name for query classes, folders or alias for getRepository.*
 
+### IN clause array parameter in query
+
+1. Request.parametrizeInClause method
+   ```ts
+   export { getRequest, Int } from "nice-mssql";
+
+   const request = getRequest();
+   
+   const parameters = request.parametrizeInClause('ids', Int, [1, 2, 3]);
+   
+   const users = await request.query(`SELECT * FROM users WHERE id IN (${parameters})`);
+   ```
+   It's a type-safe, simple solution with no downsides.
+2. Template literals
+   ```ts
+   export { getRequest } from "nice-mssql";
+
+   const request = getRequest(); 
+   const users = await request.query`SELECT * FROM users WHERE id IN (${[1, 2, 3, 4]})`;
+   ```
+   A type is detected automatically and every variable will be as a parameter, so it's not allowed to have some parts of query as variable. Sometimes it could be a problem. [Default Data Type Map](https://www.npmjs.com/package/mssql#input-name-type-value)
+
+
 ### Slow query log
 
 Logs all queries exceeding the time limit.
