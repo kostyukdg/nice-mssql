@@ -43,13 +43,13 @@ export async function closeMssqlConnection() {
   await pool.close();
 }
 
-export function getRepository(
-  Repository: new (
-    ...args: ConstructorParameters<typeof QueryRepository>
-  ) => QueryRepository,
+export function getRepository<T extends QueryRepository>(
+  Repository: new () => T,
   transaction?: Transaction,
-): QueryRepository {
-  return new Repository(transaction);
+): T {
+  const repository = new Repository();
+  if (transaction) repository.setTransaction(transaction);
+  return repository;
 }
 
 export function getTransaction() {
