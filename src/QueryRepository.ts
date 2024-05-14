@@ -15,6 +15,10 @@ export class QueryRepository {
    */
   protected slowQueryMaxExecutionTime?: SlowQueryLogger['maxExecutionTime'];
 
+  constructor(transaction?: Transaction) {
+    if (transaction) this.setTransaction(transaction);
+  }
+
   public setTransaction(transaction: Transaction) {
     this.transaction = transaction;
     return this;

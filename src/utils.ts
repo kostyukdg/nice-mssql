@@ -7,6 +7,7 @@ import {
 import { MssqlError } from './errors/MssqlError';
 import { Request } from './Request';
 import { MssqlSlowQueryError } from './errors/MssqlSlowQueryError';
+import { QueryRepository } from './QueryRepository';
 
 export interface SlowQueryLogger {
   maxExecutionTime: number;
@@ -40,6 +41,15 @@ export function getPool() {
 export async function closeMssqlConnection() {
   if (pool === undefined) throw new MssqlError('No MSSQL connection');
   await pool.close();
+}
+
+export function getRepository(
+  Repository: new (
+    ...args: ConstructorParameters<typeof QueryRepository>
+  ) => QueryRepository,
+  transaction?: Transaction,
+): QueryRepository {
+  return new Repository(transaction);
 }
 
 export function getTransaction() {
