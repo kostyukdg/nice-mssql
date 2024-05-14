@@ -31,14 +31,14 @@ async function logSlowQuery<T>(
   calledMethod: RequestExecutionMethod,
   { maxExecutionTime, logger }: SlowQueryLogger,
 ) {
+  const error = new MssqlSlowQueryError();
+  Error.captureStackTrace(error, calledMethod);
   const startTime = Date.now();
   try {
     return await callback();
   } finally {
     const executionTime = Date.now() - startTime;
     if (executionTime > maxExecutionTime) {
-      const error = new MssqlSlowQueryError();
-      Error.captureStackTrace(error, calledMethod);
       logger(error, executionTime);
     }
   }
