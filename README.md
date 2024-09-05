@@ -248,6 +248,10 @@ const usersRepository = new UsersRepository(transaction);
 await usersRepository.updateNameById(1, 'bob');
 await usersRepository.updateNameById(2, 'lily');
 
+const usersExampleRepository = new UsersRepository();
+// For dependency injection cases, use the useTransaction method. It returns a new instance of the class with the desired transaction.
+await usersExampleRepository.useTransaction(transaction).updateNameById(1, 'bob');
+
 await transaction.commit();
 ```
 
