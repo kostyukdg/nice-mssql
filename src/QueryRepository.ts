@@ -64,7 +64,7 @@ export class QueryRepository {
     return request;
   }
 
-  public useTransaction(transaction: Transaction) {
+  public useTransaction(transaction: Transaction): this {
     // @ts-expect-error - ts doesn't support this way creation of a clone
     const clone = new this.constructor(transaction);
     if (this.slowQueryMaxExecutionTime)
