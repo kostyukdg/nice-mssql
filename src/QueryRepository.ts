@@ -30,12 +30,21 @@ export class QueryRepository {
     return this.transaction;
   }
 
-  public getRequest(
-    slowQueryMaxExecutionTime?: SlowQueryLogger['maxExecutionTime'],
-  ): Request {
-    const request = this.transaction
-      ? new Request(this.transaction)
-      : new Request(this.pool);
+  public getRequest({
+    transaction,
+    slowQueryMaxExecutionTime,
+  }: {
+    transaction?: Transaction;
+    slowQueryMaxExecutionTime?: SlowQueryLogger['maxExecutionTime'];
+  } = {}): Request {
+    let request: Request;
+    if (transaction) {
+      request = new Request(transaction);
+    } else if (this.transaction) {
+      request = new Request(this.transaction);
+    } else {
+      request = new Request(this.pool);
+    }
     const slowQueryLogger = getSlowQueryLogger();
     if (slowQueryLogger) {
       request.setSlowQueryLogger({
@@ -53,5 +62,13 @@ export class QueryRepository {
       throw new MssqlSlowQueryError('No MSSQL slow query logger');
     }
     return request;
+  }
+
+  public useTransaction(transaction: Transaction) {
+    // @ts-expect-error - ts doesn't support this way creation of a clone
+    const clone = new this.constructor(transaction);
+    if (this.slowQueryMaxExecutionTime)
+      clone.slowQueryMaxExecutionTime = this.slowQueryMaxExecutionTime;
+    return clone;
   }
 }
